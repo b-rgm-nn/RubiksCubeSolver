@@ -1,5 +1,7 @@
 package GUI;
 
+import javafx.animation.Animation;
+import javafx.animation.Transition;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -10,14 +12,14 @@ import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
-
+import javafx.util.Duration;
 
 /**
  *
  * @author Matthias
  */
 public class Cubie extends Group {
-    
+
     private static Image tex = null;
 
     private double offset;
@@ -36,41 +38,44 @@ public class Cubie extends Group {
     private Direction faceX, faceY, faceZ;
     private char startFaceX, startFaceY, startFaceZ;
     
-    private Transform currentRotation;
-    private Transform curTransform;
+    Transform currentTransform;
 
     private class Direction {
+
         int x;
         int y;
         int z;
 
         int nbTurns = 0;
+
         public Direction(int x, int y, int z) {
             this.x = x;
             this.y = y;
             this.z = z;
         }
-        
-        public void rotateX(){
+
+        public void rotateX() {
             int temp = y;
             y = z;
             z = -temp;
             nbTurns++;
         }
-        public void rotateY(){
+
+        public void rotateY() {
             int temp = z;
             z = x;
             x = -temp;
             nbTurns++;
         }
-        public void rotateZ(){
+
+        public void rotateZ() {
             int temp = x;
             x = y;
             y = -temp;
             nbTurns++;
         }
     }
-    
+
     static {
         tex = new Image("file:CubeTexture.png");
     }
@@ -83,11 +88,10 @@ public class Cubie extends Group {
 
     private void init(int x, int y, int z) {
         startPosition = new Direction(x, y, z);
-        
+
         // shifted so the center is 0. otherwise rotation doesn't work
-        position = new Direction(x-1, y-1, z-1);
-        
-        
+        position = new Direction(x - 1, y - 1, z - 1);
+
         faceX = x == 0 ? new Direction(-1, 0, 0) : new Direction(1, 0, 0);
         faceY = y == 0 ? new Direction(0, -1, 0) : new Direction(0, 1, 0);
         faceZ = z == 0 ? new Direction(0, 0, -1) : new Direction(0, 0, 1);
@@ -166,12 +170,12 @@ public class Cubie extends Group {
         setMat(1);
         translate.getChildren().add(box);
     }
-    
-    public void setMat(double alpha){
+
+    public void setMat(double alpha) {
         mat = new PhongMaterial(Color.rgb(255, 255, 255, alpha), tex, null, null, null);
         box.setMaterial(mat);
     }
-    
+
     public Point3D axisToPivot(char axis) {
         switch (axis) {
             case 'X':
@@ -184,29 +188,22 @@ public class Cubie extends Group {
         return null;
     }
 
-    public void rotateGraphical(double angle, char axis) {
-        if(currentRotation == null) {
-            curTransform = rotate.getTransforms().get(0);
-            currentRotation = new Rotate(0, axisToPivot(axis));
-        }
-        currentRotation = new Rotate(angle, axisToPivot(axis)).createConcatenation(currentRotation);
-        try{
-            rotate.getTransforms().set(0, currentRotation.createConcatenation(curTransform));
-        }catch(Exception e) {
-            e.printStackTrace();
-        }
+    public void rotateGraphical(double angle, char axis, double turnTime) {
+        currentTransform = rotate.getTransforms().get(0);
+        final Animation animation = new Transition() {
+            {
+                setCycleDuration(Duration.millis(turnTime));
+            }
+
+            @Override
+            protected void interpolate(double frac) {
+                rotate.getTransforms().set(0, new Rotate(angle * frac, axisToPivot(axis)).createConcatenation(currentTransform));
+            }
+
+        };
+        animation.play();
     }
-    public void finishRotation(double angle, char axis) {
-        currentRotation = null;
-        curTransform = new Rotate(angle, axisToPivot(axis)).createConcatenation(curTransform);
-        try{
-            rotate.getTransforms().set(0, curTransform);
-            
-        }catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
+
     public void rotate(char axis) {
         switch (axis) {
             case 'X':
@@ -241,7 +238,7 @@ public class Cubie extends Group {
     public int getStartZ() {
         return startPosition.z;
     }
-    
+
     public int getX() {
         return position.x + 1;
     }
@@ -254,29 +251,30 @@ public class Cubie extends Group {
         return position.z + 1;
     }
 
-    public boolean isInCorrectPosition(){
+    public boolean isInCorrectPosition() {
         return getX() == getStartX()
                 && getY() == getStartY()
                 && getZ() == getStartZ();
     }
-    
-    public boolean isSolved(){
-        return isInCorrectPosition() 
+
+    public boolean isSolved() {
+        return isInCorrectPosition()
                 && faceX.x == (startPosition.x == 0 ? -1 : 1)
                 && faceY.y == (startPosition.y == 0 ? -1 : 1)
                 && faceZ.z == (startPosition.z == 0 ? -1 : 1);
     }
 
     /**
-     * What face is the cubie on, specifically the sticker that normally lies
-     * on the passed axis
+     * What face is the cubie on, specifically the sticker that normally lies on
+     * the passed axis
+     *
      * @param axis
-     * @return 
+     * @return
      */
-    public char getFace(char axis){
+    public char getFace(char axis) {
         Direction dir = null;
 
-        switch(axis){
+        switch (axis) {
             case 'X':
                 dir = faceX;
                 break;
@@ -287,23 +285,34 @@ public class Cubie extends Group {
                 dir = faceZ;
                 break;
         }
-        
-        if(dir.x == -1) return 'L';
-        if(dir.x ==  1) return 'R';
-        if(dir.y == -1) return 'D';
-        if(dir.y ==  1) return 'U';
-        if(dir.z == -1) return 'B';
+
+        if (dir.x == -1) {
+            return 'L';
+        }
+        if (dir.x == 1) {
+            return 'R';
+        }
+        if (dir.y == -1) {
+            return 'D';
+        }
+        if (dir.y == 1) {
+            return 'U';
+        }
+        if (dir.z == -1) {
+            return 'B';
+        }
         return 'F';
     }
 
     /**
-     * What face the cubie started on, specifically the sticker that lies
-     * on the passed axis
+     * What face the cubie started on, specifically the sticker that lies on the
+     * passed axis
+     *
      * @param axis
-     * @return 
+     * @return
      */
-    public char getStartFace(char axis){
-        switch(axis){
+    public char getStartFace(char axis) {
+        switch (axis) {
             case 'X':
                 return startFaceX;
             case 'Y':
@@ -312,12 +321,12 @@ public class Cubie extends Group {
                 return startFaceZ;
         }
     }
-    
-    public void highlight(){
+
+    public void highlight() {
         setMat(1);
     }
-    
-    public void unsetHighlight(){
+
+    public void unsetHighlight() {
         setMat(0);
     }
 }

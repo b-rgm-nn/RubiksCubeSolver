@@ -3,6 +3,8 @@ package GUI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.Group;
 
 /**
@@ -347,18 +349,13 @@ public class RubiksCube extends Group {
 //                        System.out.println(nbTurns);
                         rotateArray(action.axis, action.idx, action.clockwise, GRAPHIC);
                         // for each individual cubie, turn gradually
-                        for (int i = 0; i < turnResolution; i++) {
-                            rotateGraphical(action.axis, action.idx, action.clockwise);
-
-                            try {
-                                Thread.sleep((int) (turnTime / turnResolution));
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-
+                        rotateGraphical(action.axis, action.idx, action.clockwise);
+                        try {
+                            Thread.sleep((long) turnTime + 100);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(RubiksCube.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        finishGraphicalRotation(action.axis, action.idx, action.clockwise);
-                        
+
                 }
             }
         });
@@ -439,38 +436,19 @@ public class RubiksCube extends Group {
      */
     private void rotateGraphical(char axis, int idx, boolean clockwise) {
         int dir = clockwise ? 1 : -1;
+        double angle = dir * 90.0;
         // for each individual cubie, turn by some angle
         for (int j = 0; j < size; j++) {
             for (int k = 0; k < size; k++) {
                 switch (axis) {
                     case 'X':
-                        
-                        graphicCubies[idx][j][k].rotateGraphical(dir * 90.0 / turnResolution, axis);
+                        graphicCubies[idx][j][k].rotateGraphical(angle, axis, turnTime);
                         break;
                     case 'Y':
-                        graphicCubies[j][idx][k].rotateGraphical(dir * 90.0 / turnResolution, axis);
+                        graphicCubies[j][idx][k].rotateGraphical(angle, axis, turnTime);
                         break;
                     case 'Z':
-                        graphicCubies[j][k][idx].rotateGraphical(dir * 90.0 / turnResolution, axis);
-                        break;
-                }
-            }
-        }
-    }
-    private void finishGraphicalRotation(char axis, int idx, boolean clockwise) {
-        int dir = clockwise ? 1 : -1;
-        // for each individual cubie, turn by some angle
-        for (int j = 0; j < size; j++) {
-            for (int k = 0; k < size; k++) {
-                switch (axis) {
-                    case 'X':
-                        graphicCubies[idx][j][k].finishRotation(dir * 90.0, axis);
-                        break;
-                    case 'Y':
-                        graphicCubies[j][idx][k].finishRotation(dir * 90.0, axis);
-                        break;
-                    case 'Z':
-                        graphicCubies[j][k][idx].finishRotation(dir * 90.0, axis);
+                        graphicCubies[j][k][idx].rotateGraphical(angle, axis, turnTime);
                         break;
                 }
             }
