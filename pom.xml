@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>htl.bergmann</groupId>
-    <artifactId>Advanced_RubiksCube_Runnable2</artifactId>
+    <artifactId>Advanced_RubiksCube</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -37,4 +37,5 @@
             </plugin>
         </plugins>
     </build>
+    <name>Advanced_RubiksCube</name>
 </project>
