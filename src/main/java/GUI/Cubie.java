@@ -1,6 +1,7 @@
 package GUI;
 
 import javafx.animation.Animation;
+import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -37,7 +38,7 @@ public class Cubie extends Group {
     private Direction position;
     private Direction faceX, faceY, faceZ;
     private char startFaceX, startFaceY, startFaceZ;
-    
+
     Transform currentTransform;
 
     private class Direction {
@@ -193,13 +194,13 @@ public class Cubie extends Group {
         final Animation animation = new Transition() {
             {
                 setCycleDuration(Duration.millis(turnTime));
+                setInterpolator(Interpolator.LINEAR);
             }
 
             @Override
             protected void interpolate(double frac) {
                 rotate.getTransforms().set(0, new Rotate(angle * frac, axisToPivot(axis)).createConcatenation(currentTransform));
             }
-
         };
         animation.play();
     }

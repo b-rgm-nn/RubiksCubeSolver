@@ -403,13 +403,15 @@ public class RubiksSolver extends Group {
 
     public void scramble(int nbTurns) {
         Random rand = new Random();
-
+        String[] turns = {"F", "B", "R", "L", "U", "D", "F'", "B'", "R'", "L'", "U'", "D'"};
+        String notation = "";
         for (int i = 0; i < nbTurns; i++) {
-            String[] turns = {"F", "B", "R", "L", "U", "D", "F'", "B'", "R'", "L'", "U'", "D'"};
-            try {
-                cube.performNotation(turns[rand.nextInt(turns.length)]);
-            } catch (Exception e) {
-            }
+            notation += turns[rand.nextInt(turns.length)] + " ";
+        }
+        try {
+            cube.performNotation(notation);
+            cube.optimizeTurns();
+        } catch (Exception e) {
         }
     }
 

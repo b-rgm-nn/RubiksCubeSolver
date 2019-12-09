@@ -14,7 +14,6 @@ import javafx.scene.Group;
 public class RubiksCube extends Group {
 
     private final double turnTime = 256;
-    private final int turnResolution = 8;
 
     public static final double SCALE = 30.0;
 
