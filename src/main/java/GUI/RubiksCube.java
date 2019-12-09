@@ -350,7 +350,7 @@ public class RubiksCube extends Group {
                         // for each individual cubie, turn gradually
                         rotateGraphical(action.axis, action.idx, action.clockwise);
                         try {
-                            Thread.sleep((long) turnTime + 100);
+                            Thread.sleep((long) turnTime + 50);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(RubiksCube.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -500,6 +500,10 @@ public class RubiksCube extends Group {
 
     public void highlight(int x, int y, int z) {
         unsetHighlight();
+        performAction(new Action(x, y, z));
+    }
+
+    public void highlightMultiple(int x, int y, int z) {
         performAction(new Action(x, y, z));
     }
 

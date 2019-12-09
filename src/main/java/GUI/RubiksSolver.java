@@ -394,8 +394,14 @@ public class RubiksSolver extends Group {
         solveCorners();
         solveEdges();
         cube.unsetHighlight();
+        for (int x = 0; x < cube.getSize(); x++) {
+            for (int z = 0; z < cube.getSize(); z++) {
+                cube.highlightMultiple(x, cube.getSize()-1, z);
+            }
+        }
         oll();
         pll();
+        cube.unsetHighlight();
         while(cube.optimizeTurns()){
             System.out.println("optimize");
         }
