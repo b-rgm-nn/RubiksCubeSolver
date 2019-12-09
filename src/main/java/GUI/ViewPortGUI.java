@@ -8,6 +8,10 @@ Determine Rotation of cubie
 
  */
 
+import BL.RubiksSolver;
+import Exceptions.InvalidNotationException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -33,12 +37,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Translate;
 import javafx.stage.WindowEvent;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Matthias
  */
-public class RubiksCubeGUI extends Application {
+public class ViewPortGUI extends Application {
 
     final Group root = new Group();
     final Group axisGroup = new Group();
@@ -295,6 +300,7 @@ public class RubiksCubeGUI extends Application {
                         solver.performNotation(notation.getText());
                         notation.setText("");
                     }catch(Exception ex){
+                        ex.printStackTrace();
                         Alert a = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
                         a.show();
                     }
@@ -307,6 +313,7 @@ public class RubiksCubeGUI extends Application {
                         solver.performNotation(notation.getText());
                         notation.setText("");
                     }catch(Exception ex){
+                        ex.printStackTrace();
                         Alert a = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
                         a.show();
                     }
@@ -316,7 +323,13 @@ public class RubiksCubeGUI extends Application {
                 Button scramble = new Button("Scramble");
 //                scramble.setFont(Font.font("Verdana", FontWeight.NORMAL, 70));
                 scramble.setOnAction((e) -> {
-                    solver.scramble(15);
+                    try {
+                        solver.scramble(15);
+                    } catch (InvalidNotationException ex) {
+                        ex.printStackTrace();
+                        Alert a = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);
+                        a.show();
+                    }
                 });
 
                 vbox.getChildren().addAll(solve, hbox, scramble);

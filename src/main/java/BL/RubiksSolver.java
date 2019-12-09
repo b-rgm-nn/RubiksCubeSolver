@@ -1,6 +1,10 @@
-package GUI;
+package BL;
 
 
+import Exceptions.InvalidNotationException;
+import GUI.OllAlgorithms;
+import GUI.PllAlgorithms;
+import GUI.RubiksCubeGraphical;
 import java.util.Random;
 import javafx.scene.Group;
 
@@ -11,9 +15,10 @@ import javafx.scene.Group;
 public class RubiksSolver extends Group {
 
     private RubiksCube cube = new RubiksCube(3);
+    private RubiksCubeGraphical graphicsCube = new RubiksCubeGraphical(3);
 
     public RubiksSolver() {
-        getChildren().add(cube);
+        getChildren().add(graphicsCube);
     }
 
     /**
@@ -402,26 +407,24 @@ public class RubiksSolver extends Group {
         oll();
         pll();
         cube.unsetHighlight();
-        while(cube.optimizeTurns()){
-            System.out.println("optimize");
-        }
+        cube.optimizeTurns();
+        graphicsCube.performActions(cube.getAndClearTurnQueue());
     }
 
-    public void scramble(int nbTurns) {
+    public void scramble(int nbTurns) throws InvalidNotationException {
         Random rand = new Random();
         String[] turns = {"F", "B", "R", "L", "U", "D", "F'", "B'", "R'", "L'", "U'", "D'"};
         String notation = "";
         for (int i = 0; i < nbTurns; i++) {
             notation += turns[rand.nextInt(turns.length)] + " ";
         }
-        try {
-            cube.performNotation(notation);
-            cube.optimizeTurns();
-        } catch (Exception e) {
-        }
+        cube.performNotation(notation);
+        cube.optimizeTurns();
+        graphicsCube.performActions(cube.getAndClearTurnQueue());
     }
 
     public void performNotation(String notation) throws Exception {
         cube.performNotation(notation);
+        graphicsCube.performActions(cube.getAndClearTurnQueue());
     }
 }
