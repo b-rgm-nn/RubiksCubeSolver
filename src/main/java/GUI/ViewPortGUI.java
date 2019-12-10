@@ -10,8 +10,6 @@ Determine Rotation of cubie
 
 import BL.RubiksSolver;
 import Exceptions.InvalidNotationException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -37,7 +35,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Translate;
 import javafx.stage.WindowEvent;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -57,7 +54,6 @@ public class ViewPortGUI extends Application {
 
     private RubiksSolver solver = new RubiksSolver();
 
-    private Timeline timeline;
     boolean timelinePlaying = false;
     double ONE_FRAME = 1.0 / 24.0;
     double DELTA_MULTIPLIER = 200.0;

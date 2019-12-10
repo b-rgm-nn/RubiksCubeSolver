@@ -3,6 +3,7 @@ package BL;
 import Data.Action;
 import Data.Highlight;
 import Data.Pause;
+import Data.Rotate;
 import Data.Turn;
 import Data.UnsetHighlight;
 import Exceptions.InvalidNotationException;
@@ -65,6 +66,10 @@ public class RubiksCube {
             Integer idx = AxisUtils.FACE_TO_IDX.get(turn);
             Character axis = AxisUtils.FACE_TO_AXIS.get(turn);
             if (idx == null || axis == null) {
+                continue;
+            }
+            if(idx == 3) {
+                rotate(new Rotate(axis, clockwise));
                 continue;
             }
             // clockwise refers to when that face is up, so rotating the
@@ -149,8 +154,8 @@ public class RubiksCube {
             }
         }
     }
-
-    public void turn(Turn turn) {
+    
+    public Turn applyFrontFaceOffset(Turn turn) {
         for (int i = 0; i < frontfaceOffset; i++) {
             if (turn.axis == 'X' && turn.idx == 0) {
                 turn = new Turn('Z', 2, !turn.clockwise);
@@ -162,8 +167,18 @@ public class RubiksCube {
                 turn = new Turn('X', turn.idx, turn.clockwise);
             }
         }
+        return turn;
+    }
+
+    public void turn(Turn turn) {
+        turn = applyFrontFaceOffset(turn);
         turnQueue.add(turn);
         cubies = Array3DUtil.rotateArray(cubies, turn, size);
+    }
+    
+    public void rotate(Rotate rotate) {
+        turnQueue.add(rotate);
+        cubies = Array3DUtil.rotateArray(cubies, rotate, size);
     }
 
     /**

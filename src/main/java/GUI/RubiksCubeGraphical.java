@@ -1,10 +1,10 @@
 package GUI;
 
-import BL.Cubie;
 import BL.RubiksCube;
 import Data.Action;
 import Data.Highlight;
 import Data.Pause;
+import Data.Rotate;
 import Data.Turn;
 import Util.Array3DUtil;
 import java.util.ArrayList;
@@ -95,7 +95,19 @@ public class RubiksCubeGraphical extends Group {
                         } catch (InterruptedException ex) {
                             Logger.getLogger(RubiksCube.class.getName()).log(Level.SEVERE, null, ex);
                         }
-
+                        break;
+                    case ROTATE:
+                        Rotate rotate = (Rotate) action;
+                        cubies = Array3DUtil.rotateArray(cubies, rotate, size);
+                        for (int i = 0; i < size; i++) {
+                            rotate(rotate.axis, i, rotate.clockwise);
+                        }
+                        try {
+                            Thread.sleep((long) turnTime + 50);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(RubiksCube.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        break;
                 }
             }
         });

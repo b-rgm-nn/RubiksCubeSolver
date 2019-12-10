@@ -1,6 +1,5 @@
 package BL;
 
-
 import Exceptions.InvalidNotationException;
 import GUI.OllAlgorithms;
 import GUI.PllAlgorithms;
@@ -19,6 +18,32 @@ public class RubiksSolver extends Group {
 
     public RubiksSolver() {
         getChildren().add(graphicsCube);
+    }
+
+    public void solveCenters() throws Exception {
+        Cubie botX = cube.getStartCubie(0, 1, 1);
+        Cubie botY = cube.getStartCubie(1, 0, 1);
+        if (botY.getY() == 2) {
+            performNotation("x x");
+        } else if (botY.getX() == 0) {
+            performNotation("z");
+        } else if (botY.getX() == 2) {
+            performNotation("z'");
+        } else if (botY.getZ() == 0) {
+            performNotation("x'");
+        } else if (botY.getZ() == 2) {
+            performNotation("x");
+        }
+        
+        if(botX.getX() == 2) {
+            performNotation("y y");
+        }
+        else if(botX.getZ() == 0) {
+            performNotation("y");
+        }
+        else if(botX.getZ() == 2) {
+            performNotation("y'");
+        }
     }
 
     /**
@@ -394,20 +419,22 @@ public class RubiksSolver extends Group {
     }
 
     public void solve() throws Exception {
+        cube.unsetHighlight();
         cube.resetTurns();
-        solveCross();
-        solveCorners();
-        solveEdges();
-        cube.unsetHighlight();
-        for (int x = 0; x < cube.getSize(); x++) {
-            for (int z = 0; z < cube.getSize(); z++) {
-                cube.highlightMultiple(x, cube.getSize()-1, z);
-            }
-        }
-        oll();
-        pll();
-        cube.unsetHighlight();
-        cube.optimizeTurns();
+        solveCenters();
+//        solveCross();
+//        solveCorners();
+//        solveEdges();
+//        cube.unsetHighlight();
+//        for (int x = 0; x < cube.getSize(); x++) {
+//            for (int z = 0; z < cube.getSize(); z++) {
+//                cube.highlightMultiple(x, cube.getSize()-1, z);
+//            }
+//        }
+//        oll();
+//        pll();
+//        cube.unsetHighlight();
+//        cube.optimizeTurns();
         graphicsCube.performActions(cube.getAndClearTurnQueue());
     }
 

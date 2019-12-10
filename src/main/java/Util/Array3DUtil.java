@@ -1,9 +1,16 @@
 package Util;
 
+import Data.Rotate;
 import Data.Turn;
 
 public class Array3DUtil {
-
+    public static <T extends Rotatable> T[][][] rotateArray(T[][][] arr, Rotate rotate, int size) {
+        for (int i = 0; i < size; i++) {
+            arr = rotateArray(arr, new Turn(rotate.axis, i, rotate.clockwise), size);
+        }
+        return arr;
+    }
+    
     public static <T extends Rotatable> T[][][] rotateArray(T[][][] arr, Turn turn, int size) {
         // anticlockwise is equivalent to 3 clockwise turns
         if (!turn.clockwise) {
